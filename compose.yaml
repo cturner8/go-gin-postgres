@@ -1,0 +1,65 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  server:
+    image: mcr.microsoft.com/devcontainers/go
+    networks:
+      - server
+    environment:
+      DB_USERNAME: postgres
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      DB_HOST: db
+      DB_NAME: recordings
+    secrets:
+      - db_password
+    depends_on:
+      db:
+        condition: service_healthy
+    # volumes:
+    #   - go_pkg:/go/pkg/mod
+    ports:
+      - 8080:8080
+
+  db:
+    image: postgres:alpine
+    networks:
+      - server
+    environment:
+      POSTGRES_DB: recordings
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - db_data:/var/lib/postgresql/data/pgdata
+    secrets:
+      - db_password
+    configs:
+      - source: db_init
+        target: /docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  server: {}
+
+volumes:
+  db_data: {}
+  go_pkg: {}
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+
+configs:
+  db_init:
+    file: ./init.sql
