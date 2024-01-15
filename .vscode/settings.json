@@ -1,16 +1,17 @@
 {
-    "editor.formatOnSave": true,
-    "[go]": {
-        "editor.defaultFormatter": "golang.go"
-    },
-    "[dockercompose]": {
-        "editor.insertSpaces": true,
-        "editor.tabSize": 2,
-        "editor.autoIndent": "advanced"
-    },
-    "[dockerfile]": {
-        "editor.quickSuggestions": {
-            "strings": true
-        }
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[go]": {
+    "editor.defaultFormatter": "golang.go"
+  },
+  "[dockercompose]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "advanced"
+  },
+  "[dockerfile]": {
+    "editor.quickSuggestions": {
+      "strings": true
     }
+  }
 }

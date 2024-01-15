@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 
@@ -32,10 +33,11 @@ func connectDatabase() (*sql.DB, error) {
 func setupRouter(db *sql.DB) *gin.Engine {
 	gin.ForceConsoleColor()
 	router := gin.Default()
-	
+
+	router.Use(static.Serve("/", static.LocalFile("./web/dist", false)))
 	router.Use(middlewares.DatabaseMiddleware(db))
 
-	api :=	router.Group("/api")
+	api := router.Group("/api")
 	{
 		routes.RegisterAlbums(api)
 	}
@@ -44,18 +46,18 @@ func setupRouter(db *sql.DB) *gin.Engine {
 }
 
 func main() {
-    db, err := connectDatabase()
+	db, err := connectDatabase()
 	if err != nil {
-        log.Fatal(err)
-    }
+		log.Fatal(err)
+	}
 
 	err = db.Ping()
-    if err != nil {
-        log.Fatal(err)
-    }
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    log.Println("Connected to database")
+	log.Println("Connected to database")
 
 	router := setupRouter(db)
-    router.Run()
+	router.Run()
 }
